@@ -12,7 +12,15 @@ class StepDetector {
      * @return количество обнаруженных шагов
      */
     fun detect(samples: List<AccelSample>): Int {
-        val resultForce = len(samples)
+        var resultForce = len(samples)
+
+        // Проверяем вариацию данных - при вращении часто бывает высокая вариация
+        val mean = resultForce.average()
+        val variance = resultForce.map { (it - mean) * (it - mean) }.average()
+        println(variance)
+        resultForce = resultForce.map { it - 9.8 }
+
+
         var isFindMax = true
         var stepCounter = 0
         val threshold = 0.8
@@ -47,7 +55,7 @@ class StepDetector {
 
     fun len(sample: List<AccelSample>): List<Double> {
         return sample.map {
-            sqrt(it.x * it.x + it.y * it.y + it.z * it.z) - 9.8
+            sqrt(it.x * it.x + it.y * it.y + it.z * it.z)
         }
     }
 }
