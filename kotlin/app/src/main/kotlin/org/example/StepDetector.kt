@@ -57,7 +57,7 @@ class StepDetector {
             } else {
                 if(windows.none {
                         it < element
-                    } && element < -threshold) {
+                    }) {
                     //println("min_peak $i $element")
 
                     isFindMax = true
