@@ -5,6 +5,20 @@ import org.example.utils.TestUtils
 import kotlin.math.sqrt
 
 class StepDetector {
+
+    private fun low_frequency_filter(sample: List<Double>) : List<Double> {
+        var result = mutableListOf<Double>()
+        for(i in 0..<sample.size) {
+            val windows = mutableListOf<Double>()
+            for(j in i-10 .. i) {
+                if( j >=0) {
+                    windows.add(sample[j])
+                }
+            }
+            result.add(windows.average())
+        }
+        return result
+    }
     /**
      * Метод определения шагов
      *
@@ -18,7 +32,7 @@ class StepDetector {
         val mean = resultForce.average()
         val variance = resultForce.map { (it - mean) * (it - mean) }.average()
         println(variance)
-        resultForce = resultForce.map { it - 9.8 }
+        resultForce = low_frequency_filter(resultForce.map { it - mean })
 
 
         var isFindMax = true
@@ -35,6 +49,7 @@ class StepDetector {
                     it > element
                 } && element > threshold) {
                     isFindMax = false
+                    //println("max_peak $i $element")
                     stepCounter++
                 } else {
                     continue
@@ -43,6 +58,8 @@ class StepDetector {
                 if(windows.none {
                         it < element
                     } && element < -threshold) {
+                    //println("min_peak $i $element")
+
                     isFindMax = true
                 } else {
                     continue
